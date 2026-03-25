@@ -16,9 +16,6 @@
     The domain suffix to append to the Mail Nickname (e.g., 'contoso.com', 'contoso.onmicrosoft.com').
     If not specified, will use the tenant's default domain.
 
-.PARAMETER WhatIf
-    Preview changes without making updates. Enabled by default.
-
 .PARAMETER ExcludedUPNs
     An array of UPNs to exclude from the update (e.g., service accounts). These users will be skipped.
 
@@ -37,9 +34,7 @@ param(
     [string]$TargetDomain,
     
     [Parameter(Mandatory = $false)]
-    [string[]]$ExcludedUPNs,
-    
-    [switch]$WhatIf = $true
+    [string[]]$ExcludedUPNs
 )
 
 # Function to ensure required modules are installed
@@ -210,7 +205,7 @@ function Main {
         Write-Host "Processing members..." -ForegroundColor Green
         Write-Host ""
         
-        if ($WhatIf) {
+        if ($WhatIfPreference) {
             Write-Host "⚠️  WHAT IF MODE ENABLED - No changes will be made" -ForegroundColor Yellow
             Write-Host ""
         }
@@ -237,7 +232,7 @@ function Main {
             
             Write-Host "User: $($user.DisplayName)" -ForegroundColor White
             
-            if (Update-UserUPN -User $user -NewUPN $newUPN -WhatIfMode $WhatIf) {
+            if (Update-UserUPN -User $user -NewUPN $newUPN -WhatIfMode $WhatIfPreference) {
                 $successCount++
             }
             else {
@@ -257,8 +252,8 @@ function Main {
         Write-Host "❌ Errors: $errorCount"
         Write-Host ""
         
-        if ($WhatIf) {
-            Write-Host "To apply these changes, run the script again with -WhatIf:`$false" -ForegroundColor Yellow
+        if ($WhatIfPreference) {
+            Write-Host "To apply these changes, run the script again with -WhatIf -WhatIfPreference:`$false" -ForegroundColor Yellow
         }
         
         # Disconnect
